@@ -15,8 +15,8 @@ android {
         minSdkVersion globalConfiguration.androidMinSdkVersion
         targetSdkVersion globalConfiguration.androidTargetSdkVersion
 
-        versionCode 5
-        versionName "4.0.0"
+        versionCode 6
+        versionName "5.0.0"
 
         javaCompileOptions {
             annotationProcessorOptions.includeCompileClasspath = true
@@ -57,6 +57,13 @@ android {
             jniLibs.srcDirs = ['libs']
         }
     }
+
+    compileOptions { targetCompatibility JavaVersion.VERSION_1_8 }
+
+    lintOptions {
+        abortOnError false
+    }
+
 }
 
 dependencies {
@@ -76,20 +83,19 @@ dependencies {
     implementation androidDependencies.support_v4
     implementation androidDependencies.design
 
-    //implementation project(':gsyVideoPlayer')
+    implementation project(':gsyVideoPlayer')
 
     implementation dataDependencies.okhttpUtil
     implementation dataDependencies.okhttp
 
-    implementation (dataDependencies.permissionsdispatcher) {
+    implementation(dataDependencies.permissionsdispatcher) {
         // if you don't use android.app.Fragment you can exclude support for them
         exclude module: "support-v13"
     }
     annotationProcessor dataDependencies.permissionsdispatcherProcessor
 
-
     //jcenter
-    implementation "com.shuyu:GSYVideoPlayer:$gsyVideoVersion"
+    //implementation "com.shuyu:GSYVideoPlayer:$gsyVideoVersion"
 
     //implementation "com.shuyu:gsyVideoPlayer-java:$gsyVideoVersion'
 

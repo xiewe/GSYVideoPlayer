@@ -1,13 +1,12 @@
 package com.shuyu.gsyvideoplayer;
 
 import android.content.Context;
-import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.Surface;
 
@@ -19,7 +18,6 @@ import com.shuyu.gsyvideoplayer.model.VideoOptionModel;
 import com.shuyu.gsyvideoplayer.player.IPlayerManager;
 import com.shuyu.gsyvideoplayer.player.PlayerFactory;
 import com.shuyu.gsyvideoplayer.utils.Debuger;
-import com.shuyu.gsyvideoplayer.utils.GSYVideoType;
 import com.shuyu.gsyvideoplayer.video.base.GSYVideoViewBridge;
 
 import java.io.File;
@@ -138,14 +136,14 @@ public abstract class GSYVideoBaseManager implements IMediaPlayer.OnPreparedList
         if (cacheManager != null) {
             cacheManager.clearCache(context, cacheDir, url);
         } else {
-            getCacheManager().clearCache(context, cacheDir, url);
+            if(getCacheManager() != null) {
+                getCacheManager().clearCache(context, cacheDir, url);
+            }
         }
     }
 
     protected void init() {
-        HandlerThread mediaHandlerThread = new HandlerThread(TAG);
-        mediaHandlerThread.start();
-        mMediaHandler = new MediaHandler((mediaHandlerThread.getLooper()));
+        mMediaHandler = new MediaHandler((Looper.getMainLooper()));
         mainThreadHandler = new Handler();
     }
 
@@ -195,11 +193,16 @@ public abstract class GSYVideoBaseManager implements IMediaPlayer.OnPreparedList
     }
 
     @Override
-    public void prepare(final String url, final Map<String, String> mapHeadData, boolean loop, float speed, boolean cache, File cachePath) {
+    public void prepare(String url, Map<String, String> mapHeadData, boolean loop, float speed, boolean cache, File cachePath) {
+        prepare(url, mapHeadData, loop, speed, cache, cachePath, null);
+    }
+
+    @Override
+    public void prepare(final String url, final Map<String, String> mapHeadData, boolean loop, float speed, boolean cache, File cachePath, String overrideExtension) {
         if (TextUtils.isEmpty(url)) return;
         Message msg = new Message();
         msg.what = HANDLER_PREPARE;
-        GSYModel fb = new GSYModel(url, mapHeadData, loop, speed, cache, cachePath);
+        GSYModel fb = new GSYModel(url, mapHeadData, loop, speed, cache, cachePath, overrideExtension);
         msg.obj = fb;
         sendMessage(msg);
         if (needTimeOutOther) {
@@ -403,7 +406,10 @@ public abstract class GSYVideoBaseManager implements IMediaPlayer.OnPreparedList
      */
     @Override
     public boolean cachePreview(Context context, File cacheDir, String url) {
-        return getCacheManager().cachePreview(context, cacheDir, url);
+        if(getCacheManager() != null) {
+            return getCacheManager().cachePreview(context, cacheDir, url);
+        }
+        return  false;
     }
 
     @Override

@@ -122,6 +122,9 @@ public class GSYVideoOptionBuilder {
     //视频title
     protected String mVideoTitle = null;
 
+    // 是否需要覆盖拓展类型
+    protected String mOverrideExtension;
+
     //是否自定义的缓冲文件路径
     protected File mCachePath;
 
@@ -528,8 +531,19 @@ public class GSYVideoOptionBuilder {
     }
 
     /**
-     * 在播放前才真正执行setup
+     * 是否需要覆盖拓展类型，目前只针对exoPlayer内核模式有效
+     * @param overrideExtension 比如传入 m3u8,mp4,avi 等类型
      */
+    public GSYVideoOptionBuilder setOverrideExtension(String overrideExtension) {
+        this.mOverrideExtension = overrideExtension;
+        return this;
+    }
+
+    /**
+     * 在播放前才真正执行setup
+     * 目前弃用，请使用正常setup
+     */
+    @Deprecated
     public GSYVideoOptionBuilder setSetUpLazy(boolean setUpLazy) {
         this.mSetUpLazy = setUpLazy;
         return this;
@@ -598,6 +612,7 @@ public class GSYVideoOptionBuilder {
         if (mGSYVideoProgressListener != null) {
             gsyVideoPlayer.setGSYVideoProgressListener(mGSYVideoProgressListener);
         }
+        gsyVideoPlayer.setOverrideExtension(mOverrideExtension);
         gsyVideoPlayer.setAutoFullWithSize(mAutoFullWithSize);
         gsyVideoPlayer.setRotateViewAuto(mRotateViewAuto);
         gsyVideoPlayer.setLockLand(mLockLand);
